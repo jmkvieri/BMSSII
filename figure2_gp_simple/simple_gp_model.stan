@@ -1,37 +1,72 @@
 
 data {
-  int<lower=1> N_obs;
-  real x[N_obs];
-  real eta_real;
-  real rho_real;
-  real sigma_real;
+  int<lower=1> N; // sample size
+  int<lower=1> M; // M predictors
+  matrix[N, M] X; // predictor matrix
+  real eta_real;   // fixed parameters
+  real rho_real;  // fixed parameters
+  real sigma_real; // fixed parameters
+  real dist[N]; // distance
+}
+
+parameters{
 }
 
 model {
 }
 
 generated quantities {
-  matrix[N_obs, N_obs] K;
-  vector[N_obs] mu;
-  vector[N_obs] y_sim;
+  matrix[N, N] K;
+  matrix[N, N] L;
+  vector[N] k;
+  vector[N] z_2;
   
   real<lower=0> eta;
   real<lower=0> rho; 
   real<lower=0> sigma;
+  vector[M] beta;
+  real<lower=0> phi = 20000; //make variability low
   
- 
+  
+  vector[N] mu;
+  vector[N] y_sim;
+  
+  
   eta = eta_real;
   rho = rho_real;
   sigma = sigma_real;
   
-  K = cov_exp_quad(x, eta, rho);
-  mu = rep_vector(0, N_obs);
- 
-   for (n in 1:N_obs) {
+  beta[1] = 0;
+  
+  //non-centered parameterisation
+  for (i in 1:N) {
+    z_2[i] = normal_rng(0, 1);
+  }
+  
+  //quadratic exponentiated
+  K = cov_exp_quad(dist, eta, rho);
+  
+  for (n in 1:N) {
     K[n, n] = K[n, n] + square(sigma);
   }
-
   
-  y_sim = multi_normal_rng(mu, K);
- 
+  L = cholesky_decompose(K);
+  
+  
+  k = L * z_2;
+  
+  //linear function
+  
+  for (i in 1 : N) {
+    mu[i] = inv_logit(X[i] * beta + k[i]);
+  }
+  
+  
+  for (i in 1 : N) {
+    real mu_new;
+    
+    mu_new =  inv_logit(X[i] * beta + k[i]);
+    y_sim[i] = beta_rng(mu_new * phi, (1.0 - mu_new) * phi);
+  }
+  
 }
