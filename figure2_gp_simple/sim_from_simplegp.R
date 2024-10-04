@@ -57,7 +57,7 @@ for (i in 1:6) {
 #Plot simulations------------------------------------------------------------------------
 
 #select simulations to plot
-no_sim <- c(1, 1, 3, 1, 5, 1)
+no_sim <- c(1, 3, 3, 1, 5, 1)
 
 #plot covariance for hypo simulations
 png(file="./figure2_gp_simple/hypogp.png",
