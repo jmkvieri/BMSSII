@@ -1,13 +1,14 @@
 
 data {
   int<lower=1> N; // sample size
+  int<lower=1> N_loc; // no of cluster
   int<lower=1> M; // M predictors
   matrix[N, M] X; // predictor matrix
   real eta_real;   // fixed parameters
   real rho_real;  // fixed parameters
   real sigma_real; // fixed parameters
-  real lat[N]; // latitude
-  real lon[N]; // longitude
+  real lat[N_loc]; // latitude
+  real lon[N_loc]; // longitude
 }
 
 

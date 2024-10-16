@@ -7,7 +7,7 @@
 library(rstan)
 library(RColorBrewer)
 
-#make results reproducible
+#make results reproducible 
 set.seed(2222)
 
 
@@ -35,6 +35,9 @@ pars_sigma <- c(rep(0.001, times=6))
 
 
 sim <- list()
+
+
+#run twice to get final result
 
 for (i in 1:6) {
   
