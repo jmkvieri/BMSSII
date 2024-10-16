@@ -1,7 +1,6 @@
 #Load packages -------------------------------------------------------------------------
 
 library(rstan)
-library(rethinking)
 
 #make results reproducible
 set.seed(1111)
@@ -31,7 +30,8 @@ for (i in 1:6) {
   sim[[i]] <- sampling(sim_code,
                        data = list(N = 500, 
                                    M = 1,
-                                   K = ncol(X),
+                                   N_loc = 500,
+                                   loc = 1:500,
                                    X = X,
                                    eta_real = pars_eta[i],
                                    rho_real = pars_rho[i],

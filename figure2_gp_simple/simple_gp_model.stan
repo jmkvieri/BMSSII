@@ -1,12 +1,14 @@
 
 data {
   int<lower=1> N; // sample size
+  int<lower=1> N_loc; // no of clustes
+  array[N_loc] int loc;  // cluster id
   int<lower=1> M; // M predictors
   matrix[N, M] X; // predictor matrix
   real eta_real;   // fixed parameters
   real rho_real;  // fixed parameters
   real sigma_real; // fixed parameters
-  real dist[N]; // distance
+  real dist[N_loc]; // distance
 }
 
 parameters{
@@ -16,9 +18,9 @@ model {
 }
 
 generated quantities {
-  matrix[N, N] K;
-  matrix[N, N] L;
-  vector[N] k;
+  matrix[N_loc, N_loc] K;
+  matrix[N_loc, N_loc] L;
+  vector[N_loc] k;
   vector[N] z_2;
   
   real<lower=0> eta;
@@ -39,14 +41,14 @@ generated quantities {
   beta[1] = 0;
   
   //non-centered parameterisation
-  for (i in 1:N) {
+  for (i in 1:N_loc) {
     z_2[i] = normal_rng(0, 1);
   }
   
   //quadratic exponentiated
   K = cov_exp_quad(dist, eta, rho);
   
-  for (n in 1:N) {
+  for (n in 1:N_loc) {
     K[n, n] = K[n, n] + square(sigma);
   }
   
@@ -58,14 +60,14 @@ generated quantities {
   //linear function
   
   for (i in 1 : N) {
-    mu[i] = inv_logit(X[i] * beta + k[i]);
+    mu[i] = inv_logit(X[i] * beta + k[loc[i]]);
   }
   
   
   for (i in 1 : N) {
     real mu_new;
     
-    mu_new =  inv_logit(X[i] * beta + k[i]);
+    mu_new =  inv_logit(X[i] * beta + k[loc[i]]);
     y_sim[i] = beta_rng(mu_new * phi, (1.0 - mu_new) * phi);
   }
   

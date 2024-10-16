@@ -43,6 +43,8 @@ for (i in 1:6) {
   
   sim[[i]] <- sampling(sim_gp,
                        data = list(N = length(examp_coord$combined),
+                                   N_loc = length(examp_coord$combined),
+                                   loc = 1:length(examp_coord$combined),
                                    M = 1,
                                    K = ncol(X),
                                    X = X,
